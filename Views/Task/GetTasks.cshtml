@@ -1,0 +1,202 @@
+﻿ @model List<TodoFrontend_MVC.Models.TasksModel>
+
+<!-- Include Bootstrap for styling -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+    .task-table {
+        margin-top: 20px;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .task-table th, .task-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .task-table th {
+            background-color: #4CAF50;
+            color: white;
+            text-align: left;
+        }
+
+    .task-pending {
+        background-color: #FFEB3B;
+    }
+
+    .task-done {
+        background-color: #8BC34A;
+        color: white;
+    }
+
+    .action-btns button {
+        margin-right: 5px;
+    }
+
+    .table-container {
+        padding: 15px;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    h2 {
+        color: #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-add-task {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="container table-container">
+    <h2>My To-Do List</h2>
+
+    <!-- Add New Task Button -->
+    <div class="btn-add-task">
+        <a asp-action="AddTask" asp-route-userId="@ViewData["UserId"]" class="btn btn-primary">Add New Task</a>
+    </div>
+
+    <!-- Task List Table -->
+    <table class="task-table">
+        <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in Model)
+            {
+                <tr class="@(task.Status ? "task-pending" : "task-done")">
+                    <td>@task.TaskName</td>
+                    <!-- Conditionally display "Submitted" if status is true, otherwise "Pending" -->
+                    <td>@(task.Status ? "Submitted" : "Pending")</td>
+                    <td class="action-btns">
+                        <!-- Disable the "Mark as Done" button if the task is already done -->
+                        <form asp-action="ToggleTaskStatus" method="post" style="display: inline;">
+                            <input type="hidden" name="id" value="@task.Id" />
+                            <input type="hidden" name="userId" value="@task.UserId" />
+                            <button type="submit" class="btn btn-success btn-sm">Mark as Done</button>   @* @(task.Status ? "disabled" : "") *@
+                        </form>
+                        <form asp-action="DeleteTask" method="post" style="display: inline;">
+                            <input type="hidden" name="id" value="@task.Id" />
+                            <input type="hidden" name="userId" value="@task.UserId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        <a asp-action="EditTask" asp-route-id="@task.Id" class="btn btn-warning btn-sm">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+@* 
+
+ @model List<TodoFrontend_MVC.Models.TasksModel>
+
+<!-- Include Bootstrap for styling -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+    .task-table {
+        margin-top: 20px;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .task-table th, .task-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .task-table th {
+            background-color: #4CAF50;
+            color: white;
+            text-align: left;
+        }
+
+    .task-pending {
+        background-color: #FFEB3B;
+    }
+
+    .task-done {
+        background-color: #8BC34A;
+        color: white;
+    }
+
+    .action-btns button {
+        margin-right: 5px;
+    }
+
+    .table-container {
+        padding: 15px;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    h2 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-add-task {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="container table-container">
+    <h2>My To-Do List</h2>
+
+    <!-- Add New Task Button -->
+    <div class="btn-add-task">
+        <a asp-action="AddTask" asp-route-userId="@ViewData["UserId"]" class="btn btn-primary">Add New Task</a>
+    </div>
+
+    <!-- Task List Table -->
+    <table class="task-table">
+        <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in Model)
+            {
+                <tr class="@(task.Status ? "task-done" : "task-pending")">
+                    <td>@task.TaskName</td>
+                    <td>@(task.Status ? "Submitted" : "Pending")</td>
+                    <td class="action-btns">
+                        <!-- Toggle Status Button -->
+                        <form asp-action="ToggleTaskStatus" method="post" style="display: inline;">
+                            <input type="hidden" name="id" value="@task.Id" />
+                            <input type="hidden" name="userId" value="@task.UserId" />
+                            <button type="submit" class="btn @(task.Status ? "btn-warning" : "btn-success") btn-sm">
+                                @(task.Status ? "Mark as Pending" : "Mark as Done")
+                            </button>
+                        </form>
+                        <!-- Delete Button -->
+                        <form asp-action="DeleteTask" method="post" style="display: inline;">
+                            <input type="hidden" name="id" value="@task.Id" />
+                            <input type="hidden" name="userId" value="@task.UserId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        <a asp-action="EditTask" asp-route-id="@task.Id" class="btn btn-warning btn-sm">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div> *@

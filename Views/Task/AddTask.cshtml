@@ -1,0 +1,25 @@
+﻿ @model TodoFrontend_MVC.Models.TasksModel
+
+<form asp-action="AddTask" method="post">
+    <div class="form-group">
+        <label asp-for="TaskName"></label>
+        <input asp-for="TaskName" class="form-control" />
+        <span asp-validation-for="TaskName" class="text-danger"></span>
+    </div>
+
+    <!-- Correct way to access Session in Razor -->
+    <input type="hidden" asp-for="UserId" value="@Context.Session.GetInt32("UserId")" />
+
+    <!-- Hidden fields for Status, CreatedDate, and CompletedDate -->
+    <input asp-for="Status" type="hidden" value="false" />
+    <input asp-for="CreatedDate" type="hidden" value="@DateTime.Now" />
+    <input asp-for="CompletedDate" type="hidden" value="@DateTime.Now" />
+
+    <button type="submit" class="btn btn-primary">Add Task</button>
+</form>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

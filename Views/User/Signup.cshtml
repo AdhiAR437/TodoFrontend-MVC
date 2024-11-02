@@ -1,0 +1,18 @@
+﻿@model TodoFrontend_MVC.Models.UserModel
+
+<h2>Signup</h2>
+<form asp-controller="User" asp-action="Signup" method="post">
+    <div>
+        <label>Email:</label>
+        <input asp-for="Email" />
+    </div>
+    <div>
+        <label>Password:</label>
+        <input asp-for="Password" type="password" />
+    </div>
+    <div>
+        <label>Username:</label>
+        <input asp-for="Username" />
+    </div>
+    <button type="submit">Sign Up</button>
+</form>
