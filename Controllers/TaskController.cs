@@ -239,7 +239,7 @@ namespace TodoFrontend_MVC.Controllers
                     _logger.LogWarning("No tasks found for user ID: {UserId}", userId.Value);
                     tasks = new List<TasksModel>(); // Initialize to an empty list
                 }
-
+                TempData["TaskMessage"] = "Task Updated successfully!";
                 return View(tasks);
             }
             catch (HttpRequestException ex)
@@ -308,6 +308,7 @@ namespace TodoFrontend_MVC.Controllers
             }
 
             ModelState.AddModelError(string.Empty, "Failed to add task.");
+         
             return View(task);
         }
 
@@ -324,33 +325,96 @@ namespace TodoFrontend_MVC.Controllers
             return RedirectToAction("GetTasks");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> EditTask(int id)
+        // GET: Task/Edit/5
+        public async Task<IActionResult> Edit(int id)
         {
+            // Fetch the task details from the backend API
             var task = await _taskService.GetTaskByIdAsync(id);
             if (task == null)
             {
                 return NotFound();
             }
-            return View(task);
+
+            return View(task); // Pass the task to the Edit view
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateTask(int id, TasksModel task)
+        public async Task<IActionResult> Edit(int id, TasksModel updatedTask)
         {
-            if (!ModelState.IsValid)
+            // Assuming you have UserId stored in session
+            if (HttpContext.Session.TryGetValue("UserId", out byte[] userIdBytes))
             {
-                return View(task);
+                int userId = BitConverter.ToInt32(userIdBytes);
+                updatedTask.UserId = userId; // Set UserId from session
+            }
+            else
+            {
+                // Handle the case where UserId is not in session
+                return Unauthorized("User not logged in.");
             }
 
-            var response = await _taskService.UpdateTaskAsync(id, task);
-            if (response.IsSuccessStatusCode)
-            {
-                return RedirectToAction("GetTasks");
-            }
+            bool isUpdated = await _taskService.UpdateTaskAsync(updatedTask);
 
-            ModelState.AddModelError(string.Empty, "Failed to update task.");
-            return View(task);
+            if (isUpdated)
+            {
+                return RedirectToAction("GetTasks", "Task"); // Redirect to the list page or a success page
+            }
+            else
+            {
+                ModelState.AddModelError("", "Failed to update task.");
+                return View(updatedTask); // Return the view with an error message
+            }
         }
+
+        // POST: Task/Edit/5
+        //[HttpPost]
+        //public async Task<IActionResult> Edit(TasksModel updatedTask)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        // Update the task using the service
+        //        var success = await _taskService.UpdateTaskAsync(updatedTask);
+        //        if (success)
+        //        {
+        //            return RedirectToAction("Index"); // Redirect to the task list after successful update
+        //        }
+        //        ModelState.AddModelError("", "Failed to update task. Please try again.");
+        //    }
+
+        //    return View(updatedTask); // If validation fails, return the same view with the task data
+        //}
+
+
+
+
+
+        //[HttpGet]
+        //public async Task<IActionResult> EditTask(int id)
+        //{
+        //    var task = await _taskService.GetTaskByIdAsync(id);
+        //    if (task == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(task);
+        //}
+
+        //[HttpPost]
+        //public async Task<IActionResult> UpdateTask(int id, TasksModel task)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View(task);
+        //    }
+
+        //    var response = await _taskService.UpdateTaskAsync(id, task);
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        return RedirectToAction("GetTasks");
+        //    }
+
+        //    ModelState.AddModelError(string.Empty, "Failed to update task.");
+        //    return View(task);
+        //}
     }
 }

@@ -99,10 +99,25 @@ namespace TodoFrontend_MVC.Services
             return await _httpClient.DeleteAsync($"{id}");
         }
 
-        public async Task<HttpResponseMessage> UpdateTaskAsync(int id, TasksModel task)
+        //public async Task<HttpResponseMessage> UpdateTaskAsync(int id, TasksModel task)
+        //{
+        //    return await _httpClient.PutAsJsonAsync($"{id}", task);
+        //}
+
+       
+        public async Task<bool> UpdateTaskAsync(TasksModel updatedTask)
         {
-            return await _httpClient.PutAsJsonAsync($"{id}", task);
+            // Ensure all fields in `updatedTask` are populated, especially the `Id`
+            if (updatedTask == null || updatedTask.Id == 0)
+            {
+                // Handle error or log an issue for debugging
+                return false;
+            }
+
+            var response = await _httpClient.PutAsJsonAsync($"byId/{updatedTask.Id}", updatedTask);
+            return response.IsSuccessStatusCode;
         }
+
 
         public async Task<bool> ToggleTaskStatusAsync(int taskId)
         {
@@ -141,7 +156,8 @@ namespace TodoFrontend_MVC.Services
 
         public async Task<TasksModel> GetTaskByIdAsync(int id)
         {
-            return await _httpClient.GetFromJsonAsync<TasksModel>($"{id}");
+            return await _httpClient.GetFromJsonAsync<TasksModel>($"byId/{id}");
         }
+
     }
 }

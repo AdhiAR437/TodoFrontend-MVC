@@ -1,0 +1,49 @@
+﻿ @model TodoFrontend_MVC.Models.TasksModel
+ 
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Task</title>
+
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-XXXXXX" crossorigin="anonymous">
+    <link rel="stylesheet" href="~/css/site.css" /> <!-- Your custom CSS if you have any -->
+</head>
+<body>
+    <div class="container">
+        <h2>Edit Task</h2>
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <label asp-for="TaskName"></label>
+                <input asp-for="TaskName" class="form-control" />
+                <span asp-validation-for="TaskName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Status"></label>
+                <select asp-for="Status" class="form-control">
+                    <option value="false">Pending</option>
+                    <option value="true">Done</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CompletedDate"></label>
+                <input asp-for="CompletedDate" class="form-control" type="date" />
+                <span asp-validation-for="CompletedDate" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Task</button>
+            <a asp-action="GetTasks" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+
+    <!-- Include Bootstrap Bundle with Popper -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js" integrity="sha384-XXXXXX" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,4 +1,306 @@
-﻿ @model List<TodoFrontend_MVC.Models.TasksModel>
+﻿@model List<TodoFrontend_MVC.Models.TasksModel>
+ 
+<!-- Include Bootstrap for styling -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+<!-- Toast Notification -->
+<div class="toast" id="taskToast" style="position: fixed; top: 20px; right: 20px; z-index: 1050;" data-autohide="true" data-delay="1000">
+    <div class="toast-header">
+        <strong class="mr-auto">Notification</strong>
+       
+    </div>
+    <div class="toast-body bg-success text-white">
+        @if (TempData["TaskMessage"] != null)
+        {
+            @TempData["TaskMessage"]
+        }
+    </div>
+</div>
+
+
+<style>
+       .toast {
+        background-color: #28a745; /* Green color for the toast */
+    }
+    .toast-body {
+        color: #fff; /* White text color */
+    }
+
+    .task-card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .task-card {
+        width: 300px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+        .task-card .card-status {
+            font-weight: bold;
+        }
+
+        .task-card.pending .card-status {
+            color: #8B8000;
+        }
+
+        .task-card.done .card-status {
+            color: #8BC34A;
+        }
+
+    .action-btns {
+        display: flex;
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+    h2 {
+        color: #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-add-task {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+
+    .logout-btn {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="container">
+    <div class="logout-btn">
+        <form asp-action="Logout" asp-controller="User" method="post">
+            <button type="submit" class="btn btn-secondary">Logout</button>
+        </form>
+    </div>
+
+    <h2>My To-Do List</h2>
+
+    <!-- Add New Task Button -->
+    <div class="btn-add-task">
+        <a asp-action="AddTask" asp-route-userId="@ViewData["UserId"]" class="btn btn-primary">Add New Task</a>
+    </div>
+
+    <!-- Task List as Cards -->
+    <div class="task-card-container">
+        @foreach (var task in Model)
+        {
+            <div class="task-card @(task.Status ? "done" : "pending")">
+                <h5>@task.TaskName</h5>
+                <p class="card-status">Status: @(task.Status ? "Submitted" : "Pending")</p>
+
+                <!-- Action Buttons -->
+                <div class="action-btns">
+                    <form asp-action="ToggleTaskStatus" method="post">
+                        <input type="hidden" name="id" value="@task.Id" />
+                        <input type="hidden" name="userId" value="@task.UserId" />
+                        <button type="submit" class="btn btn-success btn-sm"> @(task.Status ? "Undo Task" : "Mark as Done")</button>
+                    </form>
+                    <form asp-action="DeleteTask" method="post">
+                        <input type="hidden" name="id" value="@task.Id" />
+                        <input type="hidden" name="userId" value="@task.UserId" />
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                    <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-warning btn-sm">Edit</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Show the toast only if there is a task message
+        @if (TempData["TaskMessage"] != null)
+        {
+            @:$('#taskToast').toast('show');
+        }
+                });
+    </script>
+}
+
+
+
+
+
+@* 
+ @model List<TodoFrontend_MVC.Models.TasksModel>
+
+<!-- Include Bootstrap for styling -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+<style>
+    .task-card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .task-card {
+        width: 300px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+        .task-card .card-status {
+            font-weight: bold;
+        }
+
+        .task-card.pending .card-status {
+            color: #FFEB3B;
+        }
+
+        .task-card.done .card-status {
+            color: #8BC34A;
+        }
+
+    .action-btns {
+        display: flex;
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+    h2 {
+        color: #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-add-task {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+
+    .logout-btn {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 15px;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+<div class="container">
+    <div class="logout-btn">
+        <form asp-action="Logout" asp-controller="User" method="post">
+            <button type="submit" class="btn btn-secondary">Logout</button>
+        </form>
+    </div>
+
+    <h2>My To-Do List</h2>
+
+    <!-- Add New Task Button -->
+    <div class="btn-add-task">
+        <a asp-action="AddTask" asp-route-userId="@ViewData["UserId"]" class="btn btn-primary">Add New Task</a>
+    </div>
+
+    <!-- Task List as Cards -->
+    <div class="task-card-container" id="taskContainer">
+        @for (var i = 0; i < Model.Count; i++)
+        {
+            if (i < 6) // Show only the first 6 tasks initially
+            {
+                <div class="task-card @(Model[i].Status ? "done" : "pending")">
+                    <h5>@Model[i].TaskName</h5>
+                    <p class="card-status">Status: @(Model[i].Status ? "Submitted" : "Pending")</p>
+
+                    <!-- Action Buttons -->
+                    <div class="action-btns">
+                        <form asp-action="ToggleTaskStatus" method="post">
+                            <input type="hidden" name="id" value="@Model[i].Id" />
+                            <input type="hidden" name="userId" value="@Model[i].UserId" />
+                            <button type="submit" class="btn btn-success btn-sm">Mark as Done</button>
+                        </form>
+                        <form asp-action="DeleteTask" method="post">
+                            <input type="hidden" name="id" value="@Model[i].Id" />
+                            <input type="hidden" name="userId" value="@Model[i].UserId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        <a asp-action="EditTask" asp-route-id="@Model[i].Id" class="btn btn-warning btn-sm">Edit</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="task-card @(Model[i].Status ? "done" : "pending") hidden">
+                    <h5>@Model[i].TaskName</h5>
+                    <p class="card-status">Status: @(Model[i].Status ? "Submitted" : "Pending")</p>
+
+                    <!-- Action Buttons -->
+                    <div class="action-btns">
+                        <form asp-action="ToggleTaskStatus" method="post">
+                            <input type="hidden" name="id" value="@Model[i].Id" />
+                            <input type="hidden" name="userId" value="@Model[i].UserId" />
+                            <button type="submit" class="btn btn-success btn-sm">Mark as Done</button>
+                        </form>
+                        <form asp-action="DeleteTask" method="post">
+                            <input type="hidden" name="id" value="@Model[i].Id" />
+                            <input type="hidden" name="userId" value="@Model[i].UserId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        <a asp-action="EditTask" asp-route-id="@Model[i].Id" class="btn btn-warning btn-sm">Edit</a>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Load More Button -->
+    @if (Model.Count > 6)
+    {
+        <div class="text-center mt-4">
+            <button id="loadMoreBtn" class="btn btn-primary">Load More</button>
+        </div>
+    }
+</div>
+
+<script>
+    let currentVisible = 6; // Number of initially visible tasks
+    const tasks = document.querySelectorAll('.task-card');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+
+    loadMoreBtn.addEventListener('click', function () {
+        for (let i = currentVisible; i < currentVisible + 6 && i < tasks.length; i++) {
+            tasks[i].classList.remove('hidden'); // Show the next set of tasks
+        }
+        currentVisible += 6; // Update the count of currently visible tasks
+
+        // Hide the button if all tasks are visible
+        if (currentVisible >= tasks.length) {
+            loadMoreBtn.classList.add('hidden');
+        }
+    });
+</script>
+ *@
+
+
+
+@*  @model List<TodoFrontend_MVC.Models.TasksModel>
 
 <!-- Include Bootstrap for styling -->
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
@@ -82,7 +384,7 @@
                         <form asp-action="ToggleTaskStatus" method="post" style="display: inline;">
                             <input type="hidden" name="id" value="@task.Id" />
                             <input type="hidden" name="userId" value="@task.UserId" />
-                            <button type="submit" class="btn btn-success btn-sm">Mark as Done</button>   @* @(task.Status ? "disabled" : "") *@
+                            <button type="submit" class="btn btn-success btn-sm">Mark as Done</button>   @* @(task.Status ? "disabled" : "") 
                         </form>
                         <form asp-action="DeleteTask" method="post" style="display: inline;">
                             <input type="hidden" name="id" value="@task.Id" />
@@ -96,7 +398,7 @@
         </tbody>
     </table>
 </div>
-
+ *@
 
 
 @* 

@@ -26,6 +26,16 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                    <div class="navbar-text ml-auto">
+                        @if (Context.Session.GetInt32("UserId") != null)
+                        {
+                            <span>Welcome : @Context.Session.GetString("Email")</span>
+                        }
+                        else
+                        {
+                            <span>Welcome Guest</span>
+                        }
+                    </div>
                 </div>
             </div>
         </nav>

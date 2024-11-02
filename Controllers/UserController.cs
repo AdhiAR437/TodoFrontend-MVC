@@ -32,6 +32,18 @@ namespace TodoFrontend_MVC.Controllers
         [HttpGet]
         public IActionResult Login() => View();
 
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            // Clear the session or any authentication cookies
+            HttpContext.Session.Clear(); // if you are using sessions
+            Response.Cookies.Delete(".AspNetCore.Cookies"); // if you are using cookie authentication
+
+            // Redirect to the login page
+            return RedirectToAction("Login", "User");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Login(TodoFrontend_MVC.Models.LoginRequest  loginRequest)
         {
@@ -42,6 +54,8 @@ namespace TodoFrontend_MVC.Controllers
                 {
                     // Store the UserId in session
                     HttpContext.Session.SetInt32("UserId", userId.Value);
+                    HttpContext.Session.SetString("Email", loginRequest.Email);
+
                     //return RedirectToAction("Dashboard"); // Redirect to Dashboard after successful login
                     return RedirectToAction("GetTasks", "Task");
 
@@ -50,6 +64,7 @@ namespace TodoFrontend_MVC.Controllers
             }
             return View(loginRequest);
         }
+
 
         [HttpGet]
         public IActionResult Dashboard()
